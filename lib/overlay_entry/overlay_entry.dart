@@ -24,7 +24,9 @@ class _OverlayEntryScreenState extends State<OverlayEntryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text('OverlayEntry sample'),
+      ),
       body: WillPopScope(
         onWillPop: () async {
           _overlayEntries.forEach((entry) {

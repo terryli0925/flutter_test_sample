@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertestapp/gesture/gesture_screen.dart';
 import 'package:fluttertestapp/overlay_entry/overlay_entry.dart';
 import 'package:fluttertestapp/unknown.dart';
 
@@ -10,6 +11,7 @@ class MyApp extends StatelessWidget {
   static Map<String, WidgetBuilder> routes = {
     '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
     '/overlay': (context) => OverlayEntryScreen(),
+    '/gesture': (context) => GestureScreen(),
   };
 
   /// The [MaterialApp] configures the top-level [Navigator] to search for routes
@@ -72,11 +74,12 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: ListView.builder(
+      body: ListView.separated(
         itemCount: MyApp.routes.length - 1,
+        separatorBuilder: (BuildContext context, int index) => Divider(),
         itemBuilder: (context, index) => ListTile(
           title: Text(
-            list[index + 1],
+            list[index + 1]?.substring(1),
           ),
           onTap: () {
             Navigator.pushNamed(
