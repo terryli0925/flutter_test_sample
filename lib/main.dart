@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fluttertestapp/gesture/gesture_screen.dart';
 import 'package:fluttertestapp/overlay_entry/overlay_entry.dart';
@@ -7,9 +9,12 @@ void main() {
   runApp(MyApp());
 }
 
+const int listBegin = 2;
+
 class MyApp extends StatelessWidget {
   static Map<String, WidgetBuilder> routes = {
-    '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
+    '/': (context) => SplashScreen(),
+    '/home': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
     '/overlay': (context) => OverlayEntryScreen(),
     '/gesture': (context) => GestureScreen(),
   };
@@ -45,6 +50,57 @@ class MyApp extends StatelessWidget {
         print('Unknown route: ${settings.name}');
         return MaterialPageRoute(builder: (context) => UnknownScreen());
       },
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
+
+class SplashScreen extends StatefulWidget {
+  @override
+  _SplashScreenState createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  Timer timer;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    print('terry initState');
+    timer = Timer(Duration(seconds: 3), routeToHome);
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    print('terry dispose');
+    if (timer.isActive) {
+      print('terry cancel');
+      timer.cancel();
+    }
+  }
+
+  routeToHome() {
+    Navigator.pushReplacementNamed(
+      context,
+      '/home',
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(
+        child: GestureDetector(
+          onTap: routeToHome,
+          child: Image(
+            width: MediaQuery.of(context).size.width / 2,
+            image: AssetImage('assets/flutter-lockup.png'),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -59,32 +115,26 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  void _incrementCounter() {}
 
   @override
   Widget build(BuildContext context) {
-    List<String> list = MyApp.routes.keys.toList();
+    List<String> list = MyApp.routes.keys.toList().sublist(listBegin);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       body: ListView.separated(
-        itemCount: MyApp.routes.length - 1,
+        itemCount: list.length,
         separatorBuilder: (BuildContext context, int index) => Divider(),
         itemBuilder: (context, index) => ListTile(
           title: Text(
-            list[index + 1]?.substring(1),
+            list[index]?.substring(1),
           ),
           onTap: () {
             Navigator.pushNamed(
               context,
-              list[index + 1],
+              list[index],
             );
           },
         ),
