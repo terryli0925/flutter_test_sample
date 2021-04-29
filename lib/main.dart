@@ -60,26 +60,37 @@ class SplashScreen extends StatefulWidget {
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  Timer timer;
+class _SplashScreenState extends State<SplashScreen>
+    with SingleTickerProviderStateMixin {
+  Timer _timer;
+  Animation<double> _animation;
+  AnimationController _controller;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    print('terry initState');
-    timer = Timer(Duration(seconds: 3), routeToHome);
+    _controller =
+        AnimationController(duration: const Duration(seconds: 2), vsync: this);
+    // 使用AnimatedBuilder就不需要手動setState()更新
+    _animation = Tween<double>(begin: 0, end: 1).animate(_controller)
+    //   ..addListener(() {
+    //     setState(() {});
+    //   });
+      ..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _timer = Timer(const Duration(seconds: 1), routeToHome);
+        }
+      });
+    _controller.forward();
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
-    super.dispose();
-    print('terry dispose');
-    if (timer.isActive) {
-      print('terry cancel');
-      timer.cancel();
+    _controller.dispose();
+    if (_timer.isActive) {
+      _timer.cancel();
     }
+    super.dispose();
   }
 
   routeToHome() {
@@ -95,9 +106,18 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Center(
         child: GestureDetector(
           onTap: routeToHome,
-          child: Image(
-            width: MediaQuery.of(context).size.width / 2,
-            image: AssetImage('assets/flutter-lockup.png'),
+          // child: Image(
+          //   width: MediaQuery.of(context).size.width / 2 * _animation.value,
+          //   image: AssetImage('assets/flutter-lockup.png'),
+          // ),
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (_, __) {
+              return Image(
+                width: MediaQuery.of(context).size.width / 2 * _animation.value,
+                image: AssetImage('assets/flutter-lockup.png'),
+              );
+            },
           ),
         ),
       ),
