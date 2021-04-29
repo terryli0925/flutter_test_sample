@@ -22,34 +22,32 @@ class _OverlayEntryScreenState extends State<OverlayEntryScreen> {
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('OverlayEntry sample'),
       ),
-      body: WillPopScope(
-        onWillPop: () async {
-          _overlayEntries.forEach((entry) {
-            entry.remove();
-          });
-          return true;
-        },
-        child: Align(
-          alignment: Alignment.bottomCenter,
-          child: Row(
-            key: _bottomBar,
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              IconButton(
-                icon: Icon(Icons.remove),
-                onPressed: remove,
-              ),
-              IconButton(
-                icon: Icon(Icons.add),
-                onPressed: show,
-              ),
-            ],
-          ),
+      body: Align(
+        alignment: Alignment.bottomCenter,
+        child: Row(
+          key: _bottomBar,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: Icon(Icons.remove),
+              onPressed: remove,
+            ),
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: show,
+            ),
+          ],
         ),
       ),
     );
@@ -64,32 +62,44 @@ class _OverlayEntryScreenState extends State<OverlayEntryScreen> {
     final Size bottomBarSize = UIHelper.getWidgetSize(_bottomBar);
     OverlayEntry overlayEntry = new OverlayEntry(
       builder: (context) {
-        return new Positioned(
-          top: MathHelper.randomNumberFromRangeDouble(
-              kToolbarHeight + MediaQuery.of(context).padding.top,
-              MediaQuery.of(context).size.height -
-                  bottomBarSize.height -
-                  height),
-          left: MathHelper.randomNumberFromRangeDouble(
-              0.0, MediaQuery.of(context).size.width - width),
-//          top: topPadding,
-//          left: MediaQuery.of(context).size.width - width,
-          child: Container(
-            width: width,
-            height: height,
-            child: Center(
-              child: Card(
-                child: Padding(
-                  padding: EdgeInsets.all(8),
-                  child: Text(
-                    text,
-//                    style: Theme.of(context).textTheme.bodyText2,
-                  ),
+        return Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: remove,
+                child: Container(
+                  color: Colors.transparent,
                 ),
-                color: Colors.grey,
               ),
             ),
-          ),
+            Positioned(
+              top: MathHelper.randomNumberFromRangeDouble(
+                  kToolbarHeight + MediaQuery.of(context).padding.top,
+                  MediaQuery.of(context).size.height -
+                      bottomBarSize.height -
+                      height),
+              left: MathHelper.randomNumberFromRangeDouble(
+                  0.0, MediaQuery.of(context).size.width - width),
+//          top: topPadding,
+//          left: MediaQuery.of(context).size.width - width,
+              child: Container(
+                width: width,
+                height: height,
+                child: Center(
+                  child: Card(
+                    child: Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Text(
+                        text,
+                   style: Theme.of(context).textTheme.bodyText2,
+                      ),
+                    ),
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            )
+          ],
         );
       },
     );
